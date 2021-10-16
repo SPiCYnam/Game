@@ -13,15 +13,15 @@ void setcolor(int fg, int bg);
 void pause();
 void draw_wall();
 
-int x = 38, y = 20, i = 1;
+int x = 38, y = 20;
 int time1, time2,playTime;
-int wall_x, wall_y;
+int i, j;
 int main()
 {
 	time_t time1= time(NULL);
 	//time_t time2 = ;
 	playTime = time2 - time1;
-	cout<<("time=%d", playTime);
+	//cout<<("time=%d", playTime);
 	setcursor(0);
 	draw_wall();
 	char ch = ' ';
@@ -62,11 +62,37 @@ void pause() {
 }
 void draw_wall()
 {
-	
-	for (int wall_x=0;wall_x<=80;wall_x++)
+	for (int i = 0;i <= 80;i++)
 	{
-		gotoxy(x, y);
-		cout<<"-";
+		for (int j = 2;j <= 2;j++)
+		{
+			gotoxy(i, j);
+			cout << "_";
+		}
+	}
+	for (int i = 0;i <= 80;i++)
+	{
+		for (int j = 30;j <= 30;j++)
+		{
+			gotoxy(i, j);
+			cout << "_";
+		}
+	}
+	for (int i = 0;i <= 0;i++)
+	{
+		for (int j = 0;j <= 30;j++)
+		{
+			gotoxy(i, j);
+			cout << "|\n";
+		}
+	}
+	for (int i = 80;i <= 80;i++)
+	{
+		for (int j = 0;j <= 30;j++)
+		{
+			gotoxy(i, j);
+			cout << "|\n";
+		}
 	}
 }
 void draw_snake(int x, int y)
