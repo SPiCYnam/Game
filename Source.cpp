@@ -12,16 +12,15 @@ void setcursor(bool visible);
 void setcolor(int fg, int bg);
 void pause();
 void draw_wall();
+void snakePlus();
 
 int x = 38, y = 20;
 int time1, time2,playTime;
 int i, j;
+int gameTime ;
 int main()
 {
-	time_t time1= time(NULL);
-	//time_t time2 = ;
-	playTime = time2 - time1;
-	//cout<<("time=%d", playTime);
+	time_t startTime = time(NULL);
 	setcursor(0);
 	draw_wall();
 	char ch = ' ';
@@ -30,6 +29,10 @@ int main()
 	draw_snake(x, y);
 	do
 	{
+		setcolor(3,0);
+		gotoxy(0,0);
+		gameTime = difftime(time(NULL), startTime);
+		cout <<"TIME : "<<gameTime ; 
 		if (_kbhit())
 		{
 			ch = _getch();
@@ -45,12 +48,21 @@ int main()
 			if (movement == 1 && x >= 1) { erase_snake(x, y); draw_snake(--x, y); }//a
 			if (movement == 2 && x < 80) { erase_snake(x, y); draw_snake(++x, y); }//d
 			if (movement == 3 && y >= 1) { erase_snake(x, y); draw_snake(x, --y); }//w
-			if (movement == 4 && y < 29) { erase_snake(x, y); draw_snake(x, ++y); }//s
+			if (movement == 4 && y < 30) { erase_snake(x, y); draw_snake(x, ++y); }//s
 		}
 		else { pause(); }
+		snakePlus();
 		Sleep(50);
 	} while (ch != 'x');
 	return 0;
+}
+void snakePlus()
+{
+	if (gameTime > 5)
+	{
+		gotoxy(x, y);
+		cout << "0";
+	}
 }
 void pause() {
 		while (1) {
@@ -64,7 +76,7 @@ void draw_wall()
 {
 	for (int i = 0;i <= 80;i++)
 	{
-		for (int j = 2;j <= 2;j++)
+		for (int j = 0;j <= 2;j++)
 		{
 			gotoxy(i, j);
 			cout << "_";
