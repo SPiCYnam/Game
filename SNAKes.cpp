@@ -2,9 +2,7 @@
 #include<windows.h>
 #include<conio.h>
 #include<time.h>
-
 using namespace std;
-
 void gotoxy(int x, int y);
 void draw_snake(int x, int y);
 void erase_snake(int x, int y);
@@ -56,12 +54,17 @@ int main()
 	} while (ch != 'x');
 	return 0;
 }
-void snakePlus()
+void snakePlus() //ทำใหม่
 {
-	if (gameTime > 5)
+	int timeSpend,timeX,timeY;
+	timeSpend = gameTime%5;
+	if (timeSpend = 0)
 	{
-		gotoxy(x, y);
-		cout << "0";
+		timeX = x;
+		timeY = y + 1;
+		gotoxy(timeX, timeY);
+		setcolor(3, 0);
+		cout << "o";
 	}
 }
 void pause() {
@@ -111,7 +114,7 @@ void draw_snake(int x, int y)
 {
 	setcolor(2, 0);
 	gotoxy(x, y);
-	cout<<" 0 ";
+	cout<<"o";
 	setcolor(0, 0);
 }
 void gotoxy(int x, int y)
