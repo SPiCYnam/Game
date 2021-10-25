@@ -16,12 +16,14 @@ void pause();
 void draw_wall();
 void snakePlus();
 void randFood();
+void eraseFood();
 void randBlock();
 void randPoison();
 
-
-int i, j,x,y;
+int i,j,x,y;
 int gameTime ;
+int px,py;
+int m=1;
 
 int main()
 {
@@ -33,11 +35,10 @@ int main()
 	randPoison();
 	x = rand() % 80;
 	y = rand() % 30;
+	gotoxy(x, y);
 	draw_snake(x, y);
 	char ch = ' ';
 	int movement = 0;
-	gotoxy(x, y);
-	
 	do
 	{
 		setcolor(3,0);
@@ -48,25 +49,33 @@ int main()
 		{
 			ch = _getch();
 			if (ch == 'a') { movement = 1; }
-			if (ch == 'd') { movement = 2; }
-			if (ch == 'w' ) { movement = 3; }
-			if (ch == 's' ) { movement = 4; }
+			else if (ch == 'd') { movement = 2; }
+			else if (ch == 'w' ) { movement = 3; }
+			else if (ch == 's' ) { movement = 4; }
 			if (ch == 'p') { movement = 0; }
 			fflush(stdin);
 		}
 		if (movement != 0)
 		{
 			if (movement == 1 && x > 0) { erase_snake(x, y); draw_snake(--x, y); }//a
-			if (movement == 2 && x < 80) { erase_snake(x, y); draw_snake(++x, y); }//d
-			if (movement == 3 && y >= 2) { erase_snake(x, y); draw_snake(x, --y); }//w
-			if (movement == 4 && y < 30) { erase_snake(x, y); draw_snake(x, ++y); }//s
+			else if (movement == 2 && x < 80) { erase_snake(x, y); draw_snake(++x, y); }//d
+			else if (movement == 3 && y >= 2) { erase_snake(x, y); draw_snake(x, --y); }//w
+			else if (movement == 4 && y < 30) { erase_snake(x, y); draw_snake(x, ++y); }//s
 		}
 		if (movement == 0)
 		{
 			pause();
 		}
-		snakePlus();
-		Sleep(100);
+		if (gameTime % 10 == 0)
+		{
+			for (int i = 0;i < 10;i++) 
+			{
+				randFood();
+				eraseFood();
+			}
+		}
+		snakePlus(); 
+		Sleep(50);
 		if (x == 80 || x == 0 || y == 1 || y == 30)
 		{
 			return 0;
@@ -74,11 +83,11 @@ int main()
 	} while (ch != 'x');
 	return 0;
 }
-void randBlock()
+void randBlock() //สุ่มใหม่ไม่ลบอันเดิม
 {
 	if (gameTime % 10 == 0)
 	{
-		for (int i = 0;i < 5;i++)
+		for (int i = 0;i < 10;i++)
 		{
 			block[i].X = rand() % 80;
 			block[i].Y = rand() % 30;
@@ -88,31 +97,20 @@ void randBlock()
 			cout << "X";
 			gotoxy(block[i].X + 2, block[i].Y);
 			cout << "X";
+			gotoxy(block[i].X + 3, block[i].Y);
+			cout << "X";
 			gotoxy(block[i].X, block[i].Y + 1);
 			cout << "X";
 			gotoxy(block[i].X + 1, block[i].Y + 1);
 			cout << "X";
 			gotoxy(block[i].X + 2, block[i].Y + 1);
+			cout << "X";
+			gotoxy(block[i].X + 3, block[i].Y + 1);
 			cout << "X";
 		}
 	}
-	else 
-	{
-			gotoxy(block[i].X, block[i].Y);
-			cout << " ";
-			gotoxy(block[i].X + 1, block[i].Y);
-			cout << " ";
-			gotoxy(block[i].X + 2, block[i].Y);
-			cout << " ";
-			gotoxy(block[i].X, block[i].Y + 1);
-			cout << " ";
-			gotoxy(block[i].X + 1, block[i].Y + 1);
-			cout << " ";
-			gotoxy(block[i].X + 2, block[i].Y + 1);
-			cout << " ";
-	}
 }
-void randPoison()
+void randPoison() //สุ่มใหม่ไม่ลบอันเดิม
 {
 	if (gameTime % 15 == 0)
 	{
@@ -125,27 +123,27 @@ void randPoison()
 		}
 	}
 }
-void randFood()
+void randFood() //สุ่มใหม่ไม่ลบอันเดิม
 {
-	if (gameTime % 10 == 0)
-	{
-		for (int i = 0;i < 10;i++)
-		{
 			food[i].X = rand() % 80;
 			food[i].Y = rand() % 30;
 			gotoxy(food[i].X, food[i].Y);
 			cout << "*";
-		}
-	}
 }
-void snakePlus() //ทำใหม่
+void eraseFood()
+{
+			gotoxy(food[i].X, food[i].Y);
+			cout << " ";
+}
+void snakePlus() //หางไม่ขยับตาม
 {
 	if (gameTime % 5 == 0)
 	{
-		gotoxy(x, y);
+		gotoxy(x+m, y);
 		setcolor(3, 0);
 		cout << "o";
-		//setcolor(0, 0);
+		setcolor(0, 0);
+		m++;
 	}
 }
 void pause() {
