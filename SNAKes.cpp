@@ -18,14 +18,18 @@ void snakePlus();
 void randFood();
 void eraseFood();
 void randBlock();
+void eraseBlock();
 void randPoison();
+void erasePoison();
 
 int i,j,x,y;
-int gameTime ;
+int gameTime,score;
 int m=1;
+bool gameOver;
 
 int main()
 {
+	//rand() = time(NULL);
 	time_t startTime = time(NULL);
 	setcursor(0);
 	draw_wall();
@@ -55,22 +59,28 @@ int main()
 		}
 		if (movement != 0)
 		{
-			if (movement == 1 && x > 0) { erase_snake(x, y); draw_snake(--x, y); }//a
+			if (movement == 1 && x > 0) { erase_snake(x, y); draw_snake(--x, y);  }//a
 			else if (movement == 2 && x < 80) { erase_snake(x, y); draw_snake(++x, y); }//d
 			else if (movement == 3 && y >= 2) { erase_snake(x, y); draw_snake(x, --y); }//w
 			else if (movement == 4 && y < 30) { erase_snake(x, y); draw_snake(x, ++y); }//s
 		}
 		if (movement == 0) { pause(); }
-		/*if (gameTime % 5 == 0)
+		if (gameTime % 5 == 0)
 		{
 			snakePlus();
 		}
 		if (gameTime % 10 == 0)
 		{
-				randFood();
 				eraseFood();
-				randBlock();
-		}*/
+				randFood();
+				//randBlock();
+				//eraseBlock();
+		}
+		if (gameTime % 15 == 0)
+		{
+			erasePoison();
+			randPoison();
+		}
 		Sleep(50);
 		if (x == 80 || x == 0 || y == 1 || y == 30)
 		{
@@ -79,6 +89,10 @@ int main()
 	} while (ch != 'x');
 	return 0;
 }
+/*bool gameOver()
+{
+	cout << "scores = " << score;
+}*/
 void randBlock() //สุ่มใหม่ไม่ลบอันเดิม
 {
 		for (int i = 0;i < 10;i++)
@@ -86,28 +100,33 @@ void randBlock() //สุ่มใหม่ไม่ลบอันเดิม
 			setcolor(7, 8);
 			block[i].X = rand() % 78;
 			block[i].Y = rand() % 30;
-			gotoxy(block[i].X, block[i].Y);
-			cout << "X";
-			gotoxy(block[i].X + 1, block[i].Y);
-			cout << "X";
-			gotoxy(block[i].X + 2, block[i].Y);
-			cout << "X";
-			gotoxy(block[i].X + 3, block[i].Y);
-			cout << "X";
-			gotoxy(block[i].X, block[i].Y + 1);
-			cout << "X";
-			gotoxy(block[i].X + 1, block[i].Y + 1);
-			cout << "X";
-			gotoxy(block[i].X + 2, block[i].Y + 1);
-			cout << "X";
-			gotoxy(block[i].X + 3, block[i].Y + 1);
-			cout << "X";
+			gotoxy(block[i].X, block[i].Y); cout << "X";
+			gotoxy(block[i].X + 1, block[i].Y); cout << "X";
+			gotoxy(block[i].X + 2, block[i].Y); cout << "X";
+			gotoxy(block[i].X + 3, block[i].Y); cout << "X";
+			gotoxy(block[i].X, block[i].Y + 1); cout << "X";
+			gotoxy(block[i].X + 1, block[i].Y + 1); cout << "X";
+			gotoxy(block[i].X + 2, block[i].Y + 1); cout << "X";
+			gotoxy(block[i].X + 3, block[i].Y + 1); cout << "X";
 		}
+}
+void eraseBlock()
+{
+	for (int i = 0;i < 10;i++)
+	{
+			setcolor(0, 0);
+			gotoxy(block[i].X, block[i].Y); cout << " ";
+			gotoxy(block[i].X + 1, block[i].Y); cout << " ";
+			gotoxy(block[i].X + 2, block[i].Y); cout << " ";
+			gotoxy(block[i].X + 3, block[i].Y); cout << " ";
+			gotoxy(block[i].X, block[i].Y + 1); cout << " ";
+			gotoxy(block[i].X + 1, block[i].Y + 1); cout << " ";
+			gotoxy(block[i].X + 2, block[i].Y + 1); cout << " ";
+			gotoxy(block[i].X + 3, block[i].Y + 1); cout << " ";
+	}
 }
 void randPoison() //สุ่มใหม่ไม่ลบอันเดิม
 {
-	if (gameTime % 15 == 0)
-	{
 		for (int i = 0;i < 5;i++)
 		{
 			poison[i].X = rand() % 80;
@@ -116,6 +135,14 @@ void randPoison() //สุ่มใหม่ไม่ลบอันเดิม
 			setcolor(4, 0);
 			cout << "+";
 		}
+}
+void erasePoison()
+{
+	for (int i = 0;i < 5;i++)
+	{
+		gotoxy(poison[i].X, poison[i].Y);
+		setcolor(0, 0);
+		cout << " ";
 	}
 }
 void randFood() //สุ่มใหม่ไม่ลบอันเดิม
@@ -131,9 +158,12 @@ void randFood() //สุ่มใหม่ไม่ลบอันเดิม
 }
 void eraseFood()
 {
-			gotoxy(food[i].X, food[i].Y);
-			setcolor(0, 0);
-			cout << " ";
+	for (int i = 0;i < 10;i++)
+	{
+		gotoxy(food[i].X, food[i].Y);
+		setcolor(0, 0);
+		cout << " ";
+	}
 }
 void snakePlus() //หางไม่ขยับตาม
 {
@@ -192,7 +222,7 @@ void draw_wall()
 }
 void draw_snake(int x, int y)
 {
-	setcolor(2, 0);
+	setcolor(2, 7);
 	gotoxy(x, y);
 	cout<<"o";
 }
