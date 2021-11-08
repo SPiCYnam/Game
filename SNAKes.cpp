@@ -35,6 +35,7 @@ int main()
 	draw_wall();
 	randFood();
 	randPoison();
+	randBlock();
 	x = rand() % 80;
 	y = rand() % 30;
 	gotoxy(x, y);
@@ -65,16 +66,19 @@ int main()
 			else if (movement == 4 && y < 30) { erase_snake(x, y); draw_snake(x, ++y); }//s
 		}
 		if (movement == 0) { pause(); }
-		if (gameTime % 5 == 0)
+		/*if (gameTime % 5 == 0)
 		{
 			snakePlus();
-		}
+		}*/
 		if (gameTime % 10 == 0)
 		{
 				eraseFood();
-				randFood();
-				//randBlock();
-				//eraseBlock();
+				randFood();	
+		}
+		if (gameTime % 10 == 0)
+		{
+			eraseBlock();
+			randBlock();
 		}
 		if (gameTime % 15 == 0)
 		{
@@ -97,7 +101,7 @@ void randBlock() //สุ่มใหม่ไม่ลบอันเดิม
 {
 		for (int i = 0;i < 10;i++)
 		{
-			setcolor(7, 8);
+			setcolor(3, 0);
 			block[i].X = rand() % 78;
 			block[i].Y = rand() % 30;
 			gotoxy(block[i].X, block[i].Y); cout << "X";
@@ -167,7 +171,7 @@ void eraseFood()
 }
 void snakePlus() //หางไม่ขยับตาม
 {
-		gotoxy(x+m, y);
+		gotoxy(x, y);
 		setcolor(2, 0);
 		cout << "o";
 		setcolor(0, 0);
@@ -226,17 +230,17 @@ void draw_snake(int x, int y)
 	gotoxy(x, y);
 	cout<<"o";
 }
-void gotoxy(int x, int y)
-{
-	COORD c = { x, y };
-	SetConsoleCursorPosition(
-		GetStdHandle(STD_OUTPUT_HANDLE), c);
-}
 void erase_snake(int x, int y)
 {
 	gotoxy(x, y);
 	setcolor(0, 0);
 	cout<<" ";
+}
+void gotoxy(int x, int y)
+{
+	COORD c = { x, y };
+	SetConsoleCursorPosition(
+		GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
 void setcursor(bool visible)
 {
