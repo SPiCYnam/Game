@@ -18,10 +18,13 @@ using namespace std;
 #define LEFT 2
 #define DOWN 3
 #define EXIT -1
+#define scount 10
 static int dx[5] = { 1, 0, -1, 0 };
 static int dy[5] = { 0, -1, 0, 1 };
-int input = RIGHT;	
+int input = RIGHT;
 int item = NOTHING;
+int gameTime, score;
+
 
 void gotoxy(int column, int row)
 {
@@ -45,8 +48,8 @@ void clearScreen()
 	if (hStdOut == INVALID_HANDLE_VALUE) return;
 	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
 	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-	if (!FillConsoleOutputCharacter(hStdOut,	(TCHAR)' ',	cellCount,homeCoords,	&count)) return;
-	if (!FillConsoleOutputAttribute(hStdOut,	csbi.wAttributes,cellCount,homeCoords,&count)) return;
+	if (!FillConsoleOutputCharacter(hStdOut, (TCHAR)' ', cellCount, homeCoords, &count)) return;
+	if (!FillConsoleOutputAttribute(hStdOut, csbi.wAttributes, cellCount, homeCoords, &count)) return;
 	SetConsoleCursorPosition(hStdOut, homeCoords);
 }
 
@@ -76,11 +79,15 @@ private:
 	int direction;
 	int ground[MAX][MAX];
 	int foodCounter;
+	Coordinate food[scount];
+	Coordinate block[scount];
+	Coordinate poison[scount];
 public:
 	void initGround();
 	void initSnake();
 	void updateSnake(int delay);
 	void updateFood();
+	void eraseFood();
 	void firstDraw();
 	int getFoodCounter();
 };
@@ -108,7 +115,7 @@ void snake::initGround()
 
 void snake::initSnake()
 {
-	length = INIT_SNAKE_LENGTH;		
+	length = INIT_SNAKE_LENGTH;
 	body[0].x = WIDTH / 2;
 	body[0].y = HEIGHT / 2;
 	direction = input;
@@ -118,7 +125,7 @@ void snake::initSnake()
 	for (i = 1; i < length; i++)
 	{
 		body[i].x = body[i - 1].x - dx[direction];	//ขยับขวา ตัวไปซ้าย
-		body[i].y = body[i - 1].y - dy[direction];		
+		body[i].y = body[i - 1].y - dy[direction];
 	}
 	//ตำแหน่งงู
 	for (i = 0; i < length; i++)
@@ -138,7 +145,7 @@ void snake::updateSnake(int delay)
 	if (input != EXIT && !oppositeDirection(direction, input))
 		direction = input;
 	body[0].x = prev[0].x + dx[direction];		//หัวงู=ตามทาง
-	body[0].y = prev[0].y + dy[direction];		
+	body[0].y = prev[0].y + dy[direction];
 
 	if (ground[body[0].y][body[0].x] < NOTHING)
 	{
@@ -150,19 +157,20 @@ void snake::updateSnake(int delay)
 	{
 		length++;		//ความยาวเพิ่ม แก้เป็นลบ
 		item = FOOD;
+		eraseFood();
 	}
 	else
 	{
 		ground[body[length - 1].y][body[length - 1].x] = NOTHING;
 		item = NOTHING;
 		gotoxy(body[length - 1].x, body[length - 1].y);		// ถ้าไม่ได้อาหาร ไม่บวกหาง
-		cout << " ";					
+		cout << " ";
 	}
 
 	for (i = 1; i < length; i++)
 	{
 		body[i].x = prev[i - 1].x;	//ตัวงูขยับตามตำแหน่งก่อนหน้า
-		body[i].y = prev[i - 1].y;	
+		body[i].y = prev[i - 1].y;
 	}
 
 	gotoxy(body[1].x, body[1].y);
@@ -181,16 +189,26 @@ void snake::updateSnake(int delay)
 void snake::updateFood()
 {
 	int x, y;
-	do
-	{
-		x = rand() % WIDTH + 1;
-		y = rand() % HEIGHT + 1;
-	} while (ground[y][x] != NOTHING);
+	for (int i = 0;i < 10;i++) {
+		do
+		{
+			food[i].x = rand() % WIDTH + 1;
+			food[i].y = rand() % HEIGHT + 1;
+		} while (ground[food[i].y][food[i].x] != NOTHING);
+		ground[food[i].y][food[i].x] = FOOD;
+		gotoxy(food[i].x, food[i].y);
+		cout << "#";
+	}
+}
 
-	ground[y][x] = FOOD;
-	foodCounter++;
-	gotoxy(x, y);
-	cout << "#";
+void snake::eraseFood()
+{
+	int x, y;
+	for (int i = 0;i < 10;i++) {
+		ground[food[i].y][food[i].x] = FOOD;
+		gotoxy(food[i].x, food[i].y);
+		cout << " ";
+	}
 }
 
 void snake::firstDraw()
@@ -224,7 +242,7 @@ void snake::firstDraw()
 					cout << "o";
 				break;
 			default:				//food
-				cout << "#";	
+				cout << "#";
 			}
 		}
 		cout << endl;
@@ -257,6 +275,7 @@ void userInput(void* id)
 int main()
 {
 	int delay = 100;
+	time_t startTime = time(NULL);
 	srand(time(NULL));
 	snake anaconda;
 	anaconda.initGround();
@@ -266,15 +285,18 @@ int main()
 	_beginthread(userInput, 0, (void*)0);
 	do
 	{
+		gotoxy(1, 31);
+		gameTime = difftime(time(NULL), startTime);
+		cout << "TIME : " << gameTime;
 		anaconda.updateSnake(delay);
 		if (item == FOOD)
 			anaconda.updateFood();
 	} while (item >= 0 && input != EXIT);
-
+	//clearScreen(); //เพิ่มทีหลัง
 	gotoxy(WIDTH / 2 - 5, HEIGHT / 2 - 2);
 	cout << "GAME OVER";
-	gotoxy(WIDTH / 2-5, HEIGHT / 2);
-	cout << "score : " << anaconda.getFoodCounter() - 1 << endl;
+	gotoxy(WIDTH / 2 - 5, HEIGHT / 2);
+	cout << "score : " << anaconda.getFoodCounter()+1 << endl;
 	gotoxy(WIDTH / 2, HEIGHT / 2);
 	_getch();
 	return 0;

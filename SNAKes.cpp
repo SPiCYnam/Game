@@ -58,7 +58,7 @@ int main()
 			if (ch == 'p') { movement = 0; }
 			fflush(stdin);
 		}
-		if (movement != 0)
+		/*if (movement != 0)
 		{
 			if (movement == 1 && x > 0) { erase_snake(x, y); draw_snake(--x, y);  }//a
 			else if (movement == 2 && x < 80) { erase_snake(x, y); draw_snake(++x, y); }//d
@@ -70,17 +70,17 @@ int main()
 		{
 			snakePlus();
 		}*/
-		if (gameTime % 10 == 0)
+		if (gameTime % 10 == 0) //à¾ÔèÁdelay
 		{
 				eraseFood();
 				randFood();	
 		}
-		if (gameTime % 10 == 0)
+		if (gameTime % 10 == 0)//à¾ÔèÁdelay
 		{
 			eraseBlock();
 			randBlock();
 		}
-		if (gameTime % 15 == 0)
+		if (gameTime % 15 == 0)//à¾ÔèÁdelay
 		{
 			erasePoison();
 			randPoison();
@@ -97,7 +97,7 @@ int main()
 {
 	cout << "scores = " << score;
 }*/
-void randBlock() //ÊØèÁãËÁèäÁèÅºÍÑ¹à´ÔÁ
+void randBlock() 
 {
 		for (int i = 0;i < 10;i++)
 		{
@@ -129,7 +129,7 @@ void eraseBlock()
 			gotoxy(block[i].X + 3, block[i].Y + 1); cout << " ";
 	}
 }
-void randPoison() //ÊØèÁãËÁèäÁèÅºÍÑ¹à´ÔÁ
+void randPoison() 
 {
 		for (int i = 0;i < 5;i++)
 		{
@@ -149,7 +149,7 @@ void erasePoison()
 		cout << " ";
 	}
 }
-void randFood() //ÊØèÁãËÁèäÁèÅºÍÑ¹à´ÔÁ
+void randFood()
 {
 	for (int i = 0;i < 10;i++)
 	{
@@ -169,7 +169,7 @@ void eraseFood()
 		cout << " ";
 	}
 }
-void snakePlus() //ËÒ§äÁè¢ÂÑºµÒÁ
+void snakePlus() //á¡éä´éáÅéÇ ÍÂÙè·Õèsln tail
 {
 		gotoxy(x, y);
 		setcolor(2, 0);
