@@ -8,8 +8,10 @@ using namespace std;
 #define MAX 100
 #define WIDTH 80
 #define HEIGHT 30
-#define INIT_SNAKE_LENGTH 4
+#define INIT_SNAKE_LENGTH 10
+#define POISON 2
 #define FOOD 1
+#define BLOCK -3
 #define WALL -2
 #define SNAKE -1
 #define NOTHING 0
@@ -24,7 +26,22 @@ static int dy[5] = { 0, -1, 0, 1 };
 int input = RIGHT;
 int item = NOTHING;
 int gameTime, score;
+int movement = 0;
 
+void setcolor(int fg, int bg)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, bg * 16 + fg);
+}
+
+void pause() {
+	while (1) {
+		for (int i = 0; i < 255; i++) {
+			if (GetAsyncKeyState(i))
+				return;
+		}
+	}
+}
 
 void gotoxy(int column, int row)
 {
@@ -88,12 +105,17 @@ public:
 	void updateSnake(int delay);
 	void updateFood();
 	void eraseFood();
+	void updateBlock();
+	void eraseBlock();
+	void updatePoison();
+	void erasePoison();
 	void firstDraw();
 	int getFoodCounter();
 };
 
 void snake::initGround()
 {
+	setcolor(8, 0);
 	int i, j;
 	for (i = 0; i < MAX; i++)
 		for (j = 0; j < MAX; j++)
@@ -155,10 +177,10 @@ void snake::updateSnake(int delay)
 
 	if (ground[body[0].y][body[0].x] == FOOD)
 	{
-		length++;		//ความยาวเพิ่ม แก้เป็นลบ
+		length++;	
 		item = FOOD;
-		eraseFood();
 	}
+
 	else
 	{
 		ground[body[length - 1].y][body[length - 1].x] = NOTHING;
@@ -173,6 +195,7 @@ void snake::updateSnake(int delay)
 		body[i].y = prev[i - 1].y;
 	}
 
+	setcolor(2, 0);
 	gotoxy(body[1].x, body[1].y);
 	cout << "o";					//เปลี่ยนหัวเป็นตัว
 	gotoxy(body[0].x, body[0].y);
@@ -188,27 +211,115 @@ void snake::updateSnake(int delay)
 
 void snake::updateFood()
 {
+	setcolor(6, 0);
 	int x, y;
-	for (int i = 0;i < 10;i++) {
-		do
+	for (int i = 0;i < 5;i++) {
+		//do
 		{
 			food[i].x = rand() % WIDTH + 1;
 			food[i].y = rand() % HEIGHT + 1;
-		} while (ground[food[i].y][food[i].x] != NOTHING);
+		} //while (ground[food[i].y][food[i].x] != NOTHING);
 		ground[food[i].y][food[i].x] = FOOD;
-		gotoxy(food[i].x, food[i].y);
-		cout << "#";
+		gotoxy(food[i].x, food[i].y); cout << "#";
 	}
 }
 
 void snake::eraseFood()
 {
 	int x, y;
-	for (int i = 0;i < 10;i++) {
-		ground[food[i].y][food[i].x] = FOOD;
-		gotoxy(food[i].x, food[i].y);
-		cout << " ";
+	for (int i = 0;i < 5;i++) {
+		//ground[food[i].y][food[i].x] = FOOD;
+		gotoxy(food[i].x, food[i].y); cout << " ";
 	}
+}
+
+void snake::updateBlock()
+{
+	setcolor(3, 0);
+	int x, y;
+	for (int i = 0;i < 10;i++) {
+		do
+		{
+			block[i].x = rand() % WIDTH - 6 ;
+			block[i].y = rand() % HEIGHT ;
+		} while (ground[block[i].y][block[i].x] != NOTHING);
+		ground[block[i].y][block[i].x] = BLOCK;
+		ground[block[i].y][block[i].x+1] = BLOCK;
+		ground[block[i].y][block[i].x+2] = BLOCK;
+		ground[block[i].y][block[i].x+3] = BLOCK;
+		ground[block[i].y][block[i].x + 4] = BLOCK;
+		ground[block[i].y][block[i].x + 5] = BLOCK;
+		ground[block[i].y][block[i].x + 6] = BLOCK;
+		ground[block[i].y+1][block[i].x] = BLOCK;
+		ground[block[i].y+1][block[i].x+1] = BLOCK;
+		ground[block[i].y+1][block[i].x+2] = BLOCK;
+		ground[block[i].y+1][block[i].x+3] = BLOCK;
+		ground[block[i].y + 1][block[i].x + 4] = BLOCK;
+		ground[block[i].y + 1][block[i].x + 5] = BLOCK;
+		ground[block[i].y + 1][block[i].x + 6] = BLOCK;
+		gotoxy(block[i].x, block[i].y); cout << "X";
+		gotoxy(block[i].x + 1, block[i].y); cout << "X";
+		gotoxy(block[i].x + 2, block[i].y); cout << "X";
+		gotoxy(block[i].x + 3, block[i].y); cout << "X";
+		gotoxy(block[i].x + 4, block[i].y); cout << "X";
+		gotoxy(block[i].x + 5, block[i].y); cout << "X";
+		gotoxy(block[i].x + 6, block[i].y); cout << "X";
+		gotoxy(block[i].x, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 1, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 2, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 3, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 4, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 5, block[i].y + 1); cout << "X";
+		gotoxy(block[i].x + 6, block[i].y + 1); cout << "X";
+	}
+}
+
+void snake::eraseBlock()
+{
+	int x, y;
+	for (int i = 0;i < 10;i++) {
+		//ground[food[i].y][food[i].x] = FOOD;
+		gotoxy(block[i].x, block[i].y); cout << " ";
+		gotoxy(block[i].x + 1, block[i].y); cout << " ";
+		gotoxy(block[i].x + 2, block[i].y); cout << " ";
+		gotoxy(block[i].x + 3, block[i].y); cout << " ";
+		gotoxy(block[i].x + 4, block[i].y); cout << " ";
+		gotoxy(block[i].x + 5, block[i].y); cout << " ";
+		gotoxy(block[i].x + 6, block[i].y); cout << " ";
+		gotoxy(block[i].x, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 1, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 2, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 3, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 4, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 5, block[i].y + 1); cout << " ";
+		gotoxy(block[i].x + 6, block[i].y + 1); cout << " ";
+	}
+}
+
+void snake::updatePoison()
+{
+	setcolor(4, 0);
+	int x, y;
+	for (int i = 0;i <5;i++) {
+		//do
+		{
+			poison[i].x = rand() % WIDTH ;
+			poison[i].y = rand() % HEIGHT;
+		} //while (ground[poison[i].y][poison[i].x] != NOTHING);
+		ground[poison[i].y][poison[i].x] = POISON;
+		gotoxy(poison[i].x, poison[i].y);
+		cout << "@";
+	}
+}
+
+void snake::erasePoison()
+{
+	int x, y;
+	for (int i = 0;i < 5;i++) {
+		gotoxy(poison[i].x, poison[i].y); cout << " ";
+		//[poison[i].y][poison[i].x] = NOTHING;
+	}
+
 }
 
 void snake::firstDraw()
@@ -224,24 +335,35 @@ void snake::firstDraw()
 			case NOTHING:
 				cout << " "; break;
 			case WALL:
-				if ((i == 0 && j == 0)
-					|| (i == 0 && j == WIDTH + 1)
-					|| (i == HEIGHT + 1 && j == 0)
-					|| (i == HEIGHT + 1 && j == WIDTH + 1))
-					cout << "+";    //มุมรั้ว
-				else
+				if  (	(i == 0 && j == 0) || (i == 0 && j == WIDTH + 1) || (i == HEIGHT + 1 && j == 0) || (i == HEIGHT + 1 && j == WIDTH + 1)	)
+				{	setcolor(8, 0);
+					cout << "+"; 
+				}   //มุมรั้ว
+				else {
 					if (j == 0 || j == WIDTH + 1)
-						cout << "|";    //left right wall
-					else
-						cout << "-";    //top bottom wall
-				break;
+					{
+						setcolor(8, 0);
+						cout << "|";
+					}
+					//left right wall
+					else {
+						setcolor(8, 0);
+						cout << "-";
+					}   //top bottom wall
+					break;
+				}
 			case SNAKE:
-				if (i == body[0].y && j == body[0].x)
+				if (i == body[0].y && j == body[0].x) {
+					setcolor(2, 0);
 					cout << "O";
-				else
+				}
+				else {
+					setcolor(2, 0);
 					cout << "o";
+				}
 				break;
 			default:				//food
+				setcolor(6, 0);
 				cout << "#";
 			}
 		}
@@ -266,6 +388,8 @@ void userInput(void* id)
 		case 'D': case 'd': input = RIGHT; break;
 		case 'A': case 'a': input = LEFT; break;
 		case 27:	    input = EXIT; break;
+		//case 'P': case 'p': pause(); break;
+		case 'X': case 'x': input = EXIT; break;
 		}
 	} while (input != EXIT && item >= 0);
 	_endthread();
@@ -274,6 +398,7 @@ void userInput(void* id)
 
 int main()
 {
+	//int c = _getch();
 	int delay = 100;
 	time_t startTime = time(NULL);
 	srand(time(NULL));
@@ -283,16 +408,44 @@ int main()
 	anaconda.updateFood();
 	anaconda.firstDraw();
 	_beginthread(userInput, 0, (void*)0);
+
 	do
 	{
-		gotoxy(1, 31);
+		gotoxy(1, HEIGHT + 2);
 		gameTime = difftime(time(NULL), startTime);
 		cout << "TIME : " << gameTime;
 		anaconda.updateSnake(delay);
-		if (item == FOOD)
+		//if (c == 'p' || c == 'P')  { pause(); }
+		if (item == FOOD) {
+			anaconda.updateSnake(delay);
+		}
+		/*if (item == POISON) {
+			delay = 5;
+			if (gameTime == 5) { delay = 100; }
+		}*/
+		if (gameTime % 2 == 0)//เพิ่มdelay
+		{
+			anaconda.updateSnake(delay);
+		}
+		if (gameTime % 15 == 0) //เพิ่มdelay
+		{
+			anaconda.eraseFood();
 			anaconda.updateFood();
+		}
+		/*if (gameTime % 30 == 0)//เพิ่มdelay
+		{
+			anaconda.eraseBlock();
+			anaconda.updateBlock();
+		}
+		if (gameTime % 15 == 0)//เพิ่มdelay
+		{
+			anaconda.erasePoison();
+			anaconda.updatePoison();
+		}*/
 	} while (item >= 0 && input != EXIT);
+
 	//clearScreen(); //เพิ่มทีหลัง
+	setcolor(7, 0);
 	gotoxy(WIDTH / 2 - 5, HEIGHT / 2 - 2);
 	cout << "GAME OVER";
 	gotoxy(WIDTH / 2 - 5, HEIGHT / 2);

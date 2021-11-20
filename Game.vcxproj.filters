@@ -18,5 +18,8 @@
     <ClCompile Include="SNAKes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="snake++\tail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

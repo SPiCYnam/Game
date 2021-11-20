@@ -24,12 +24,9 @@ void erasePoison();
 
 int i,j,x,y;
 int gameTime,score;
-int m=1;
-bool gameOver;
 
 int main()
 {
-	//rand() = time(NULL);
 	time_t startTime = time(NULL);
 	setcursor(0);
 	draw_wall();
