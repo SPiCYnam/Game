@@ -8,9 +8,10 @@ using namespace std;
 #define MAX 100
 #define WIDTH 80
 #define HEIGHT 30
-#define INIT_SNAKE_LENGTH 10
+#define SNAKE_LENGTH 10
 #define POISON 2
 #define FOOD 1
+#define RUNTIME 3
 #define BLOCK -3
 #define WALL -2
 #define SNAKE -1
@@ -25,8 +26,12 @@ static int dx[5] = { 1, 0, -1, 0 };
 static int dy[5] = { 0, -1, 0, 1 };
 int input = RIGHT;
 int item = NOTHING;
-int gameTime, score;
-int movement = 0;
+int gameTime;
+int score ;
+bool foodstate = false;
+bool poisonstate = false;
+bool snakestate = false;
+
 
 void setcolor(int fg, int bg)
 {
@@ -95,25 +100,25 @@ private:
 	Coordinate body[WIDTH * HEIGHT];
 	int direction;
 	int ground[MAX][MAX];
-	int foodCounter;
+	int score;
 	Coordinate food[scount];
 	Coordinate block[scount];
 	Coordinate poison[scount];
 public:
-	void initGround();
+	void Ground();
 	void initSnake();
-	void updateSnake(int delay);
-	void updateFood();
+	void drawSnake(int delay);
+	void randFood();
 	void eraseFood();
-	void updateBlock();
+	void randBlock();
 	void eraseBlock();
-	void updatePoison();
+	void randPoison();
 	void erasePoison();
 	void firstDraw();
-	int getFoodCounter();
+	int foodCounter();
 };
 
-void snake::initGround()
+void snake::Ground()
 {
 	setcolor(8, 0);
 	int i, j;
@@ -137,11 +142,11 @@ void snake::initGround()
 
 void snake::initSnake()
 {
-	length = INIT_SNAKE_LENGTH;
+	length = SNAKE_LENGTH;
 	body[0].x = WIDTH / 2;
 	body[0].y = HEIGHT / 2;
 	direction = input;
-	foodCounter = 0;
+	score = 0;
 
 	int i;
 	for (i = 1; i < length; i++)
@@ -154,7 +159,7 @@ void snake::initSnake()
 		ground[body[i].y][body[i].x] = SNAKE;
 }
 
-void snake::updateSnake(int delay)
+void snake::drawSnake(int delay)
 {
 	int i;
 	Coordinate prev[WIDTH * HEIGHT];
@@ -166,7 +171,7 @@ void snake::updateSnake(int delay)
 
 	if (input != EXIT && !oppositeDirection(direction, input))
 		direction = input;
-	body[0].x = prev[0].x + dx[direction];		//À—«ßŸ=µ“¡∑“ß
+	body[0].x = prev[0].x + dx[direction];		
 	body[0].y = prev[0].y + dy[direction];
 
 	if (ground[body[0].y][body[0].x] < NOTHING)
@@ -177,9 +182,39 @@ void snake::updateSnake(int delay)
 
 	if (ground[body[0].y][body[0].x] == FOOD)
 	{
-		length++;	
+		ground[body[length - 1].y][body[length - 1].x] = NOTHING;
+		item = NOTHING;
+		ground[body[length - 2].y][body[length - 2].x] = NOTHING;
+		item = NOTHING;
+		gotoxy(body[length - 1].x, body[length - 1].y);
+		cout << " ";
+		gotoxy(body[length - 2].x, body[length - 2].y);
+		cout << " ";
+		length-=2;	
 		item = FOOD;
+		score++;
 	}
+
+	if (ground[body[0].y][body[0].x] == POISON)
+	{
+		length++;
+		item = POISON;
+	}
+
+	if (gameTime != 0 && gameTime % 2 == 0 && !snakestate)
+	{
+		snakestate = true;
+		length++;
+		item = RUNTIME ;
+	}
+		else if (gameTime != 0 && gameTime % 2 != 0 && snakestate)
+		{
+			snakestate = false;
+			ground[body[length - 1].y][body[length - 1].x] = NOTHING;
+			item = NOTHING;
+			gotoxy(body[length - 1].x, body[length - 1].y);		
+			cout << " ";
+		}
 
 	else
 	{
@@ -197,11 +232,10 @@ void snake::updateSnake(int delay)
 
 	setcolor(2, 0);
 	gotoxy(body[1].x, body[1].y);
-	cout << "o";					//‡ª≈’Ë¬πÀ—«‡ªÁπµ—«
+	cout << "o";					
 	gotoxy(body[0].x, body[0].y);
-	cout << "O";					//„ ËÀ—«‡æ‘Ë¡
+	cout << "O";					
 
-	//µ”·ÀπËßßŸ
 	for (i = 0; i < length; i++)
 		ground[body[i].y][body[i].x] = SNAKE;
 
@@ -209,16 +243,16 @@ void snake::updateSnake(int delay)
 	return;
 }
 
-void snake::updateFood()
+void snake::randFood()
 {
 	setcolor(6, 0);
 	int x, y;
 	for (int i = 0;i < 5;i++) {
-		//do
+		do
 		{
 			food[i].x = rand() % WIDTH + 1;
 			food[i].y = rand() % HEIGHT + 1;
-		} //while (ground[food[i].y][food[i].x] != NOTHING);
+		} while (ground[food[i].y][food[i].x] != NOTHING);
 		ground[food[i].y][food[i].x] = FOOD;
 		gotoxy(food[i].x, food[i].y); cout << "#";
 	}
@@ -228,12 +262,12 @@ void snake::eraseFood()
 {
 	int x, y;
 	for (int i = 0;i < 5;i++) {
-		//ground[food[i].y][food[i].x] = FOOD;
+		ground[food[i].y][food[i].x] = NOTHING;
 		gotoxy(food[i].x, food[i].y); cout << " ";
 	}
 }
 
-void snake::updateBlock()
+void snake::randBlock()
 {
 	setcolor(3, 0);
 	int x, y;
@@ -278,7 +312,7 @@ void snake::eraseBlock()
 {
 	int x, y;
 	for (int i = 0;i < 10;i++) {
-		//ground[food[i].y][food[i].x] = FOOD;
+		ground[food[i].y][food[i].x] = NOTHING;
 		gotoxy(block[i].x, block[i].y); cout << " ";
 		gotoxy(block[i].x + 1, block[i].y); cout << " ";
 		gotoxy(block[i].x + 2, block[i].y); cout << " ";
@@ -296,16 +330,16 @@ void snake::eraseBlock()
 	}
 }
 
-void snake::updatePoison()
+void snake::randPoison()
 {
 	setcolor(4, 0);
 	int x, y;
 	for (int i = 0;i <5;i++) {
-		//do
+		do
 		{
 			poison[i].x = rand() % WIDTH ;
 			poison[i].y = rand() % HEIGHT;
-		} //while (ground[poison[i].y][poison[i].x] != NOTHING);
+		} while (ground[poison[i].y][poison[i].x] != NOTHING);
 		ground[poison[i].y][poison[i].x] = POISON;
 		gotoxy(poison[i].x, poison[i].y);
 		cout << "@";
@@ -316,10 +350,9 @@ void snake::erasePoison()
 {
 	int x, y;
 	for (int i = 0;i < 5;i++) {
+		ground[poison[i].y][poison[i].x] = NOTHING;
 		gotoxy(poison[i].x, poison[i].y); cout << " ";
-		//[poison[i].y][poison[i].x] = NOTHING;
 	}
-
 }
 
 void snake::firstDraw()
@@ -338,7 +371,7 @@ void snake::firstDraw()
 				if  (	(i == 0 && j == 0) || (i == 0 && j == WIDTH + 1) || (i == HEIGHT + 1 && j == 0) || (i == HEIGHT + 1 && j == WIDTH + 1)	)
 				{	setcolor(8, 0);
 					cout << "+"; 
-				}   //¡ÿ¡√—È«
+				}  
 				else {
 					if (j == 0 || j == WIDTH + 1)
 					{
@@ -371,9 +404,9 @@ void snake::firstDraw()
 	}
 }
 
-int snake::getFoodCounter()
+int snake::foodCounter()
 {
-	return foodCounter;
+	return score ;
 }
 
 void userInput(void* id)
@@ -388,60 +421,78 @@ void userInput(void* id)
 		case 'D': case 'd': input = RIGHT; break;
 		case 'A': case 'a': input = LEFT; break;
 		case 27:	    input = EXIT; break;
-		//case 'P': case 'p': pause(); break;
 		case 'X': case 'x': input = EXIT; break;
+		//case 'P': case 'p': pause();
 		}
 	} while (input != EXIT && item >= 0);
+
 	_endthread();
 	return;
 }
 
 int main()
 {
-	//int c = _getch();
 	int delay = 100;
+	int wait;
 	time_t startTime = time(NULL);
 	srand(time(NULL));
-	snake anaconda;
-	anaconda.initGround();
-	anaconda.initSnake();
-	anaconda.updateFood();
-	anaconda.firstDraw();
+	snake S;
+	S.Ground();
+	S.initSnake();
+	S.randFood();
+	S.firstDraw();
 	_beginthread(userInput, 0, (void*)0);
 
 	do
 	{
+		//int c = _getch();{if (c == 'p' || c == 'P') { pause(); }}
 		gotoxy(1, HEIGHT + 2);
 		gameTime = difftime(time(NULL), startTime);
 		cout << "TIME : " << gameTime;
-		anaconda.updateSnake(delay);
-		//if (c == 'p' || c == 'P')  { pause(); }
-		if (item == FOOD) {
-			anaconda.updateSnake(delay);
+		S.drawSnake(delay);
+		if (item == FOOD) 
+		{
+			S.randFood();
+			delay = 100 ;
 		}
-		/*if (item == POISON) {
-			delay = 5;
-			if (gameTime == 5) { delay = 100; }
-		}*/
+		if (item == POISON)
+		{
+			delay = 50;
+		}
+		if (item == RUNTIME)
+		{
+			delay = 100;
+		}
 		if (gameTime % 2 == 0)//‡æ‘Ë¡delay
 		{
-			anaconda.updateSnake(delay);
+			S.drawSnake(delay);
 		}
-		if (gameTime % 15 == 0) //‡æ‘Ë¡delay
+		if (gameTime!=0 &&gameTime % 15 == 0 && !poisonstate) //‡æ‘Ë¡delay
 		{
-			anaconda.eraseFood();
-			anaconda.updateFood();
+			poisonstate = true;
+			S.erasePoison();
+			S.randPoison();
+			
 		}
-		/*if (gameTime % 30 == 0)//‡æ‘Ë¡delay
+				else if (gameTime % 15 != 0 && poisonstate) //‡æ‘Ë¡delay
+				{
+					poisonstate = false;
+					//S.erasePoison();
+					//S.randPoison();
+				}
+		if (gameTime != 0 && gameTime % 15 == 0 && !foodstate) //‡æ‘Ë¡delay
 		{
-			anaconda.eraseBlock();
-			anaconda.updateBlock();
+			foodstate = true;
+			S.eraseFood();
+			S.randFood();
 		}
-		if (gameTime % 15 == 0)//‡æ‘Ë¡delay
-		{
-			anaconda.erasePoison();
-			anaconda.updatePoison();
-		}*/
+				else if (gameTime % 15 != 0 && foodstate) //‡æ‘Ë¡delay
+				{
+					foodstate = false;
+					//S.eraseFood();
+				//	S.randFood();
+				}
+
 	} while (item >= 0 && input != EXIT);
 
 	//clearScreen(); //‡æ‘Ë¡∑’À≈—ß
@@ -449,7 +500,7 @@ int main()
 	gotoxy(WIDTH / 2 - 5, HEIGHT / 2 - 2);
 	cout << "GAME OVER";
 	gotoxy(WIDTH / 2 - 5, HEIGHT / 2);
-	cout << "score : " << anaconda.getFoodCounter()+1 << endl;
+	cout << "score : " << S.foodCounter() << endl;
 	gotoxy(WIDTH / 2, HEIGHT / 2);
 	_getch();
 	return 0;
