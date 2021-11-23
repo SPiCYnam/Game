@@ -1,0 +1,4 @@
+﻿  SNAKes.cpp
+C:\Users\ASUS\Documents\GitHub\Game\64010926\Source Code\SNAKes.cpp(713,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\ASUS\Documents\GitHub\Game\64010926\Source Code\SNAKes.cpp(727,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  snakegame.vcxproj -> C:\Users\ASUS\Documents\GitHub\Game\64010926\Source Code\x64\Debug\snakegame.exe

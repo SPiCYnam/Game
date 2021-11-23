@@ -1,0 +1,2 @@
+C:\Users\ASUS\Documents\GitHub\Game\64010926\Source Code\x64\Debug\snakegame.exe
+C:\Users\ASUS\Documents\GitHub\Game\64010926\Source Code\x64\Debug\snakegame.pdb

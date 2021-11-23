@@ -1,0 +1,8 @@
+﻿  SNAKes.cpp
+C:\Users\ASUS\Documents\GitHub\Game\SNAKes\SNAKes.cpp(712,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\ASUS\Documents\GitHub\Game\SNAKes\SNAKes.cpp(726,22): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 213 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  snakegame.vcxproj -> C:\Users\ASUS\Documents\GitHub\Game\SNAKes\x64\Release\snakegame.exe

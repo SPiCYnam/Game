@@ -1,0 +1,2 @@
+C:\Users\ASUS\Documents\GitHub\Game\snakegame\x64\Release\snakegame.exe
+C:\Users\ASUS\Documents\GitHub\Game\SNAKes\x64\Release\snakegame.exe
